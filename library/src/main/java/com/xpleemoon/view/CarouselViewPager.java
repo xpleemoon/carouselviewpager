@@ -1,4 +1,4 @@
-package com.xpleemoon.library;
+package com.xpleemoon.view;
 
 import android.content.Context;
 import android.support.annotation.IntDef;

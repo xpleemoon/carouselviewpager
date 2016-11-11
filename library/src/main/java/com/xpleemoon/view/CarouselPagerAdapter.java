@@ -1,4 +1,4 @@
-package com.xpleemoon.library;
+package com.xpleemoon.view;
 
 import android.support.annotation.IntRange;
 import android.support.v4.view.PagerAdapter;
@@ -26,16 +26,26 @@ public abstract class CarouselPagerAdapter<V extends CarouselViewPager> extends 
     }
 
     /**
-     * @return 实际数据数量
+     * 视觉上所见的数据数量
+     *
+     * @return
      */
     @IntRange(from = 0)
-    public abstract int getRealDataCount();
+    public abstract int getCountOfVisual();
 
+    /**
+     * 实际数据量
+     * <ul>
+     * <li>{@link #getCount()}>{@link #getCountOfVisual()}</li>
+     * </ul>
+     *
+     * @return
+     */
     @Override
     public final int getCount() {
-        long realDataCount = getRealDataCount();
+        long realDataCount = getCountOfVisual();
         if (realDataCount > 1) {
-            realDataCount = getRealDataCount() * COEFFICIENT;
+            realDataCount = getCountOfVisual() * COEFFICIENT;
             realDataCount = realDataCount > Integer.MAX_VALUE ? Integer.MAX_VALUE : realDataCount;
         }
         return (int) realDataCount;
@@ -48,7 +58,7 @@ public abstract class CarouselPagerAdapter<V extends CarouselViewPager> extends 
 
     @Override
     public final Object instantiateItem(ViewGroup container, int position) {
-        position = position % getRealDataCount();
+        position = position % getCountOfVisual();
         return this.instantiateRealItem(container, position);
     }
 
@@ -69,10 +79,10 @@ public abstract class CarouselPagerAdapter<V extends CarouselViewPager> extends 
         int position = mViewPager.getCurrentItem();
         // ViewPager的更新即将完成，替换position，以达到无限循环的效果
         if (position == 0) {
-            position = getRealDataCount();
+            position = getCountOfVisual();
             mViewPager.setCurrentItem(position, false);
         } else if (position == getCount() - 1) {
-            position = getRealDataCount() - 1;
+            position = getCountOfVisual() - 1;
             mViewPager.setCurrentItem(position, false);
         }
     }

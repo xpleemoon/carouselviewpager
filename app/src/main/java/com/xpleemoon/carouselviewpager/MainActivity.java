@@ -1,26 +1,43 @@
 package com.xpleemoon.carouselviewpager;
 
-import android.support.v4.view.PagerAdapter;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.xpleemoon.library.CarouselPagerAdapter;
-import com.xpleemoon.library.CarouselViewPager;
+import com.xpleemoon.view.CarouselPagerAdapter;
+import com.xpleemoon.view.CarouselViewPager;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private CarouselViewPager mCarouselView;
+    private CarouselPagerAdapter mAdapter;
+    private IndicatorDotView mIndicatorDotView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mCarouselView = (CarouselViewPager) findViewById(R.id.carousel);
-        PagerAdapter adapter = new SimpleCarouselAdapter(mCarouselView,
+        mAdapter = new SimpleCarouselAdapter(mCarouselView,
                 new int[]{R.layout.page1, R.layout.page2, R.layout.page3});
-        mCarouselView.setAdapter(adapter);
+        mCarouselView.setAdapter(mAdapter);
+        mIndicatorDotView = (IndicatorDotView) findViewById(R.id.indicator);
+        mIndicatorDotView.setCount(mAdapter.getCountOfVisual(), 0); // init indicator
+        mCarouselView.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                // position % mAdapter.getCountOfVisual()——因为CarouselViewPager实现的原因，这里的position已经不是我们视觉上所看到的position了
+                mIndicatorDotView.setSelectPosition(position % mAdapter.getCountOfVisual());
+            }
+        });
+
+        findViewById(R.id.resume).setOnClickListener(this);
+        findViewById(R.id.pause).setOnClickListener(this);
     }
 
     @Override
@@ -41,6 +58,20 @@ public class MainActivity extends AppCompatActivity {
         mCarouselView.setLifeCycle(CarouselViewPager.DESTROY);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.resume:
+                mCarouselView.setLifeCycle(CarouselViewPager.RESUME);
+                Toast.makeText(getApplicationContext(), "resume carousel", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.pause:
+                mCarouselView.setLifeCycle(CarouselViewPager.PAUSE);
+                Toast.makeText(getApplicationContext(), "pause carousel", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
     private static class SimpleCarouselAdapter extends CarouselPagerAdapter<CarouselViewPager> {
         private int[] viewResIds;
 
@@ -50,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public int getRealDataCount() {
+        public int getCountOfVisual() {
             return viewResIds != null ? viewResIds.length : 0;
         }
 

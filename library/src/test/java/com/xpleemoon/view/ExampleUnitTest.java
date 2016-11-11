@@ -1,4 +1,4 @@
-package com.xpleemoon.library;
+package com.xpleemoon.view;
 
 import org.junit.Test;
 

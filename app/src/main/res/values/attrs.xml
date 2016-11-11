@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="IndicatorDotView">
+        <attr name="dotCount" format="integer" />
+        <attr name="dotDefault" format="reference" />
+        <attr name="dotSelected" format="reference" />
+        <attr name="dotSelectedPosition" format="integer" />
+    </declare-styleable>
+</resources>
